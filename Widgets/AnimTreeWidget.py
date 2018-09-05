@@ -32,9 +32,9 @@ class AnimTreeWidget(QTreeWidget):
         self.setEditTriggers(QTreeWidget.DoubleClicked | QTreeWidget.EditKeyPressed)
         self.setSelectionMode(self.ExtendedSelection)
 
-    def iconTextChanged(self):
+    def iconTextChanged(self, str):
         item = self.currentItem()
-        item.setIcon(0, QIcon(":/icons/" + item.text(1)))
+        item.setIcon(0, QIcon(":/icons/" + str or item.text(1)))
 
     def addPackages(self, packages):
 
@@ -98,14 +98,17 @@ class IconDelegate(QStyledItemDelegate):
 
 class EditIconItemDelegate(QStyledItemDelegate):
 
-    iconTextChanged = pyqtSignal()
+    iconTextChanged = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
         self.size = QSize(40, 40)
+        self.undo = ""
 
     def createEditor(self, parent, option, index):
         editor = QLineEdit(parent)
+        editor.textChanged.connect(self.updateText)
+        editor.textEdited.connect(self.updateText)
         editor.setFrame(True)
 
         completer = QCompleter(icons(), editor)
@@ -115,21 +118,26 @@ class EditIconItemDelegate(QStyledItemDelegate):
 
     def setEditorData(self, lineEdit, index):
         value = index.model().data(index, Qt.EditRole)
+        self.undo = value
         lineEdit.setText(value)
-        self.iconTextChanged.emit()
 
     def setModelData(self, lineEdit, model, index):
         value = lineEdit.text()
         model.setData(index, value, Qt.EditRole)
-        self.iconTextChanged.emit()
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
 
     def eventFilter(self, editor, event):
-        if (event.type() == QEvent.KeyPress and ( event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter )):
+        if (event.type() == QEvent.KeyPress and event.key() == Qt.Key_Escape):
+            self.updateText(self.undo)
+            self.closeEditor.emit(editor)
+            return True
+        elif (event.type() == QEvent.KeyPress and ( event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter )):
             self.commitData.emit(editor)
             self.closeEditor.emit(editor)
-            self.iconTextChanged.emit()
             return True
         return False
+
+    def updateText(self, string):
+        self.iconTextChanged.emit(string)
