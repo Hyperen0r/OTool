@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QTabWidget, QFileDialog
 
 log = logging.getLogger(__name__)
 
+# TODO - Add merge plugin
+
 
 class OSelector(MainWindow):
 
@@ -98,7 +100,30 @@ class OSelector(MainWindow):
     def actionScanFolder(self):
         log.info("Action: Scan Folder called")
         self.toggleGroupBoxes(False)
-        self.scanFolder()
+
+        animations = set()
+        if self.navMenu.invisibleRootItem().childCount() > 0:
+            box = QMessageBox()
+            box.setIcon(QMessageBox.Question)
+            box.setWindowTitle('Clear or Append ?')
+            box.setText("Do you want to append new animations to the tree"
+                        "or build a new one from the new animations ?")
+            box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            buttonY = box.button(QMessageBox.Yes)
+            buttonY.setText('Clear')
+            buttonN = box.button(QMessageBox.No)
+            buttonN.setText('Append')
+            box.exec_()
+
+            if box.clickedButton() == buttonY:
+                self.navMenu.clear()
+            elif box.clickedButton() == buttonN:
+                answer = question(None, "Duplicates ?", "Do you want to ignore already existing animations ?")
+                if answer == QMessageBox.Yes:
+                    animations = self.navMenu.animations_id()
+
+        self.scanFolder(animations)
+
         self.toggleGroupBoxes(True)
         log.info("Action: Scan Folder done")
 
@@ -133,7 +158,7 @@ class OSelector(MainWindow):
     def openWizardSetup(self):
         self.wizardSetup.show()
 
-    def scanFolder(self):
+    def scanFolder(self, animations):
         scan_dir = QFileDialog.getExistingDirectory(self, 'Folder Location',
                                                     get_config().get("PATHS", "installFolder"),
                                                     QFileDialog.ShowDirsOnly)
@@ -185,7 +210,7 @@ class OSelector(MainWindow):
                             for line in f:
                                 anim_type, anim_options, anim_id, anim_file, anim_obj = FNISParser.parseLine(line)
 
-                                if anim_type == FNISParser.TYPE.UNKNOWN or not anim_id:
+                                if anim_type == FNISParser.TYPE.UNKNOWN or not anim_id or anim_id in animations:
                                     log.debug(indent("Anim type : " + anim_type.name + " || Line : " + line.strip(), 4))
                                 else:
                                     log.debug(indent("Adding animation, Type : " + anim_type.name + " || Line : " + line.strip(), 4))

@@ -85,6 +85,17 @@ class AnimTreeWidget(QTreeWidget):
                     folder.set("i", child.text(1))
                     self.childToXML(folder, child, level + 1)
 
+    def animations_id(self, item=None):
+        if item is None:
+            item = self.invisibleRootItem()
+
+        animations = set()
+
+        for i in range(item.childCount()):
+            child = item.child(i)
+            animations.union(self.animations_id(child))
+        return animations
+
 
 class IconDelegate(QStyledItemDelegate):
 
