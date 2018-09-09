@@ -299,6 +299,7 @@ class OSelector(MainWindow):
 
     def treeChanged(self):
         self.slotLcdAnimChecked()
+        self.navMenu.cleanup()
 
     def generatePlugin(self):
         logging.info("=============== GENERATING PLUGIN ===============")

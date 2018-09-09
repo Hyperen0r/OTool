@@ -77,13 +77,11 @@ class AnimTreeWidget(QTreeWidget):
             id = child.get("id")
             if not id:
                 id = ""
-            print("Hello :" + name + " | " + id)
 
             if id in animations:
                 duplicateCounter += 1
                 log.info("Duplicate found : " + child.get("n"))
             else:
-                log.debug("Anim : " + name)
                 item = create_item(name, icon, id)
                 parent.addChild(item)
                 duplicateCounter += self.addXMLChild(item, child, animations)
@@ -250,7 +248,21 @@ class AnimTreeWidget(QTreeWidget):
         log.info("ACTION : Cleaning")
         self.cleanup()
 
-    def cleanup(self):
+    def cleanup(self, item=None):
+        if not item:
+            item = self.invisibleRootItem()
+
+        for i in reversed(range(item.childCount())):
+            child = item.child(i)
+            if child:
+                self.cleanup(child)
+
+        if not item.text(2) and item.childCount() == 0:
+            if item is not self.invisibleRootItem():
+                parent = item.parent()
+                if not parent:
+                    parent = self.invisibleRootItem()
+                parent.removeChild(item)
         return
 
     def open_menu(self):
