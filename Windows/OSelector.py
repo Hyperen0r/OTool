@@ -32,6 +32,7 @@ class OSelector(MainWindow):
         self.groupBoxNavMenu = create_group_box(self, "Navigation Menu")
 
         self.navMenu = AnimTreeWidget()
+        self.navMenu.itemClicked.connect(self.slotLcdAnimChecked)
         self.wizardGeneration = WizardGeneration(self.navMenu)
 
         hbox = QHBoxLayout()
@@ -106,8 +107,7 @@ class OSelector(MainWindow):
             box = QMessageBox()
             box.setIcon(QMessageBox.Question)
             box.setWindowTitle('Clear or Append ?')
-            box.setText("Do you want to append new animations to the tree"
-                        "or build a new one from the new animations ?")
+            box.setText("Do you want to append new animations to the tree or build a new one ?")
             box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
             buttonY = box.button(QMessageBox.Yes)
             buttonY.setText('Clear')
@@ -120,7 +120,7 @@ class OSelector(MainWindow):
             elif box.clickedButton() == buttonN:
                 answer = question(None, "Duplicates ?", "Do you want to ignore already existing animations ?")
                 if answer == QMessageBox.Yes:
-                    animations = self.navMenu.animations_id()
+                    animations = self.navMenu.animationsId()
 
         self.scanFolder(animations)
 
@@ -130,6 +130,29 @@ class OSelector(MainWindow):
     def actionLoadPlugin(self):
         log.info("Action: Load Plugin called")
         self.toggleGroupBoxes(False)
+
+        animations = set()
+        if self.navMenu.invisibleRootItem().childCount() > 0:
+            box = QMessageBox()
+            box.setIcon(QMessageBox.Question)
+            box.setWindowTitle('Clear or Append ?')
+            box.setText("Do you want to append new animations to the tree or build a new one ?")
+            box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            buttonY = box.button(QMessageBox.Yes)
+            buttonY.setText('Clear')
+            buttonN = box.button(QMessageBox.No)
+            buttonN.setText('Append')
+            box.exec_()
+
+            if box.clickedButton() == buttonY:
+                self.navMenu.clear()
+            elif box.clickedButton() == buttonN:
+                answer = question(None, "Duplicates ?", "Do you want to ignore already existing animations ?")
+                if answer == QMessageBox.Yes:
+                    animations = self.navMenu.animationsId()
+
+        self.loadPlugin(animations)
+
         self.toggleGroupBoxes(True)
         log.info("Action: Load Plugin done")
 
@@ -158,6 +181,22 @@ class OSelector(MainWindow):
     def openWizardSetup(self):
         self.wizardSetup.show()
 
+    def loadPlugin(self, animations):
+        name = get_config().get("CONFIG", "lastName") or get_config().get("PLUGIN", "name")
+        xml_file, _filter = QFileDialog.getOpenFileName(self, "Open file",
+                                                        get_config().get("PATHS", "installFolder") + "/" + name + "/" +
+                                                        get_config().get("PATHS", "pluginFolder"),
+                                                        "MyOsa file (*.myo)")
+        if xml_file:
+            log.info("Loading xml_file : " + xml_file)
+            duplicate = self.navMenu.addXML(xml_file, animations)
+
+            if duplicate > 0:
+                QMessageBox.information(self, "Results", str(duplicate) +
+                                        " duplicates found (Not added)\n"
+                                        "List (INFO Level) available in logs (if activated)")
+        self.treeChanged()
+
     def scanFolder(self, animations):
         scan_dir = QFileDialog.getExistingDirectory(self, 'Folder Location',
                                                     get_config().get("PATHS", "installFolder"),
@@ -170,6 +209,7 @@ class OSelector(MainWindow):
             package = None
             redundantStrings = set()
             previous_module_name = ""
+            duplicate = 0
 
             for root, dirs, files in os.walk(scan_dir):
                 for file in files:
@@ -210,7 +250,10 @@ class OSelector(MainWindow):
                             for line in f:
                                 anim_type, anim_options, anim_id, anim_file, anim_obj = FNISParser.parseLine(line)
 
-                                if anim_type == FNISParser.TYPE.UNKNOWN or not anim_id or anim_id in animations:
+                                if anim_id in animations:
+                                    duplicate += 1
+                                    log.info("Duplicate found : " + anim_id)
+                                elif anim_type == FNISParser.TYPE.UNKNOWN or not anim_id:
                                     log.debug(indent("Anim type : " + anim_type.name + " || Line : " + line.strip(), 4))
                                 else:
                                     log.debug(indent("Adding animation, Type : " + anim_type.name + " || Line : " + line.strip(), 4))
@@ -231,7 +274,12 @@ class OSelector(MainWindow):
                             packages[package_name] = package
 
             self.navMenu.addPackages(packages)
-        return
+
+            if duplicate > 0:
+                QMessageBox.information(self, "Results", str(duplicate) +
+                                        " duplicates found (Not added)\n"
+                                        "List (INFO Level) available in logs (if activated)")
+        self.treeChanged()
 
     def setInstallFolder(self):
         folder = get_config().get("PATHS", "installFolder")
@@ -246,13 +294,17 @@ class OSelector(MainWindow):
             get_config().set("PATHS", "installFolder", str(folder))
             save_config()
 
+    def slotLcdAnimChecked(self):
+        self.lcdAnimChecked.display(self.navMenu.animationsCount())
+
+    def treeChanged(self):
+        self.slotLcdAnimChecked()
+
     def generatePlugin(self):
         logging.info("=============== GENERATING PLUGIN ===============")
 
         self.wizardGeneration.show()
 
-        """
-        """
         return
 
     def toggleGroupBoxes(self, state):
