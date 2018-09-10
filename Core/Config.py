@@ -28,7 +28,7 @@ def create_config():
     config.set("PLUGIN", "defaultStageIcon", "omu_stickdance00")
     config.set("PLUGIN", "defaultMaleIcon", "omu_male")
     config.set("PLUGIN", "defaultFemaleIcon", "omu_female")
-    config.set("PLUGIN", "maxItemPerPage", "25")
+    config.set("PLUGIN", "maxItemsPerPage", "25")
     config.set("PLUGIN", "maxItemStringLength", "25")
 
     config.add_section("PATHS")

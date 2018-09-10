@@ -1,6 +1,7 @@
 import re
 import os
 import logging
+from enum import Enum
 from Core.Config import get_config
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
@@ -11,12 +12,33 @@ log = logging.getLogger(__name__)
 INDENT_SIZE = 8
 MAX_STRING_LENGTH = get_config().getint("PLUGIN", "maxItemStringLength")
 
+class ITEM_TYPE(Enum):
+    ROOT = "Root"
+    ANIMATION = "Animation"
+    FOLDER = "Folder"
+    SET = "Set"
 
-def create_item(name="Default", icon=get_config().get("PLUGIN", "defaultFolderIcon"), id=""):
+def create_item(name="Default",
+                icon=get_config().get("PLUGIN", "defaultFolderIcon"),
+                id="",
+                itemType=ITEM_TYPE.FOLDER,
+                maxChildren=get_config().get("PLUGIN", "maxItemsPerPage")):
+
     item = QTreeWidgetItem()
+
     item.setText(0, name[slice(0, MAX_STRING_LENGTH)])
     item.setText(1, icon)
     item.setText(2, id)
+
+    if id:
+        itemType = ITEM_TYPE.ANIMATION
+
+    item.setText(3, itemType.value)
+    item.setText(4, maxChildren)
+    item.setText(5, "0") #SetIndex
+    item.setText(6, "0") #SetCounter
+    item.setText(7, "0") #LevelTwoCounter
+
     item.setIcon(0, QIcon(":/icons/" + icon))
     item.setCheckState(0, Qt.Checked)
 
@@ -27,6 +49,16 @@ def create_item(name="Default", icon=get_config().get("PLUGIN", "defaultFolderIc
     else:
         item.setFlags(flags)
     return item
+
+def toDefaultItem(item):
+    item.setText(0, "")
+    item.setText(1, "")
+    item.setText(2, "")
+    item.setText(3, ITEM_TYPE.ROOT.value)
+    item.setText(4, get_config().get("PLUGIN", "maxItemsPerPage"))
+    item.setText(5, "0") #SetIndex
+    item.setText(6, "0") #SetCounter
+    item.setText(7, "0") #LevelTwoCounter
 
 
 def create_dir(path):

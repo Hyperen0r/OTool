@@ -38,38 +38,3 @@ class Animation:
             return self.actors[actor][index]
         else:
             return next(iter(self.actors.values()))[index]
-
-    def toItem(self):
-
-        animIcon = get_config().get("PLUGIN", "defaultAnimationIcon")
-        actorIcon = get_config().get("PLUGIN", "defaultActorIcon")
-
-        item = None
-
-        if self.actorsCount() > 1:
-            animItem = create_item(self.name(), animIcon)
-            item = animItem
-
-            i = 1
-            for actor, stages in self.actors.items():
-                actorItem = create_item("Actor " + str(i), actorIcon)
-                animItem.addChild(actorItem)
-                i += 1
-
-                j = 1
-                for stage in stages:
-                    actorItem.addChild(stage.toItem("Stage " + str(j)))
-                    j += 1
-        else:
-            for actor, stages in self.actors.items():
-
-                if len(stages) > 1:
-                    animItem = create_item(self.name(), animIcon)
-                    item = animItem
-
-                    for j, stage in enumerate(stages):
-                        animItem.addChild(stage.toItem("Stage " + str(j+1)))
-                else:
-                    for stage in stages:
-                        item = stage.toItem()
-        return item

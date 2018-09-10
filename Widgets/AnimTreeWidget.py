@@ -1,7 +1,8 @@
 import logging
+import math
 import xml.etree.ElementTree as ET
 
-from Core.Utils import create_item
+from Core.Utils import create_item, ITEM_TYPE, toDefaultItem
 from Core.Config import get_config
 from Resources.resources import icons
 from PyQt5.QtCore import Qt, QSize, QEvent, pyqtSignal
@@ -11,6 +12,7 @@ from PyQt5.QtWidgets import QTreeWidget, QHeaderView, QStyledItemDelegate, QLine
 
 log = logging.getLogger(__name__)
 
+
 class AnimTreeWidget(QTreeWidget):
 
     def __init__(self):
@@ -19,7 +21,9 @@ class AnimTreeWidget(QTreeWidget):
         self.header().setDefaultAlignment(Qt.AlignHCenter)
         self.header().setMinimumSectionSize(200)
         self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.setHeaderLabels(["Name", "Icon", "Id"])
+        self.setHeaderLabels(["Name", "Icon", "Id", "MaxChildren", "Type", "SetIndex", "SetCounter", "LevelTwo"])
+
+        toDefaultItem(self.invisibleRootItem())
 
         editIconDelegate = EditIconItemDelegate(self)
         editIconDelegate.iconTextChanged.connect(self.iconTextChanged)
@@ -39,6 +43,69 @@ class AnimTreeWidget(QTreeWidget):
         item = self.currentItem()
         item.setIcon(0, QIcon(":/icons/" + str or item.text(1)))
 
+    def addNestedChild(self, parent, child):
+        # If there are already a set let's try to add the item to the first available
+        for i in range(parent.childCount()):
+            item = parent.child(i)
+            if item.text(3) == ITEM_TYPE.SET.value:
+                if item.childCount() < int(item.text(4)):
+                    return item.addChild(child)
+
+        # If none is available, add an other splitter, if needed
+        if 0 < self.nextSetIndex(parent) < int(parent.text(4)):
+            index = self.nextSetIndex(parent)
+            item = self.insertSet(parent, index)
+            return item.addChild(child)
+
+        if parent.childCount() == int(parent.text(4)):
+
+            index = self.nextSetIndex(parent)
+            if self.getSetLevel(parent) > 1:
+                parent.setText(7, str(int(parent.text(7)) + 1))
+                index = int(parent.text(7))
+            item = self.insertSet(parent, index)
+            if self.getSetLevel(parent) > 1:
+                item.setText(4, str(int(item.text(4)) - index))
+
+            for idx, i in enumerate(range(index+1, parent.childCount()), start=1):
+                other_child = parent.takeChild(index+1)
+                if other_child.text(3) == ITEM_TYPE.SET.value:
+                    other_child.setText(0, "Set " + str(idx))
+                item.addChild(other_child)
+
+            item = self.insertSet(parent)
+            item.addChild(child)
+            return True
+
+        return parent.addChild(child)
+
+    def getSetLevel(self, item):
+        return math.floor(int(item.text(6)) / int(item.text(4)))
+
+    def insertSet(self, item, index=-1):
+        if index == -1:
+            index = self.nextSetIndex(item)
+
+        setIcon = get_config().get("PLUGIN", "defaultSetIcon")
+        set = create_item("Set " + str(index+1), setIcon, "", ITEM_TYPE.SET)
+        item.insertChild(index, set)
+        item.setText(6, str(int(item.text(6)) + 1 ))
+        self.setNextSetIndex(item, index + 1)
+        return set
+
+    def nextSetIndex(self, item):
+        return int(item.text(5))
+
+    def setNextSetIndex(self, item, num=-1):
+        maxChildren = int(item.text(4))
+        setIndex = int(item.text(5))
+
+        if num == -1:
+            item.setText(5, str(setIndex + 1 % maxChildren))
+        else:
+            item.setText(5, str(num % maxChildren))
+        return
+
     def addPackages(self, packages):
 
         for packageName, package in packages.items():
@@ -52,17 +119,51 @@ class AnimTreeWidget(QTreeWidget):
                 moduleItem = create_item(moduleName, moduleIcon)
 
                 for animationName, animation in module.items():
-                    item = animation.toItem()
+                    item = self.toItem(animation)
                     if item:
-                        moduleItem.addChild(item)
+                        self.addNestedChild(moduleItem, item)
 
                 if moduleItem.childCount():
-                    packageItem.addChild(moduleItem)
+                    self.addNestedChild(packageItem, moduleItem)
 
             if packageItem.childCount():
-                self.addTopLevelItem(packageItem)
+                self.addNestedChild(self.invisibleRootItem(), packageItem)
 
         return
+
+    def toItem(self, animation):
+        animIcon = get_config().get("PLUGIN", "defaultAnimationIcon")
+        actorIcon = get_config().get("PLUGIN", "defaultActorIcon")
+
+        item = None
+
+        if animation.actorsCount() > 1:
+            animItem = create_item(animation.name(), animIcon)
+            item = animItem
+
+            i = 1
+            for actor, stages in animation.actors.items():
+                actorItem = create_item("Actor " + str(i), actorIcon)
+                self.addNestedChild(animItem, actorItem)
+                i += 1
+
+                j = 1
+                for stage in stages:
+                    self.addNestedChild(actorItem, stage.toItem("Stage " + str(j)))
+                    j += 1
+        else:
+            for actor, stages in animation.actors.items():
+
+                if len(stages) > 1:
+                    animItem = create_item(animation.name(), animIcon)
+                    item = animItem
+
+                    for j, stage in enumerate(stages):
+                        self.addNestedChild(animItem, stage.toItem("Stage " + str(j+1)))
+                else:
+                    for stage in stages:
+                        item = stage.toItem()
+        return item
 
     def addXML(self, xml, animations):
         xml = ET.parse(xml)
@@ -83,7 +184,7 @@ class AnimTreeWidget(QTreeWidget):
                 log.info("Duplicate found : " + child.get("n"))
             else:
                 item = create_item(name, icon, id)
-                parent.addChild(item)
+                self.addChild(parent, item)
                 duplicateCounter += self.addXMLChild(item, child, animations)
         return duplicateCounter
 
@@ -226,7 +327,7 @@ class AnimTreeWidget(QTreeWidget):
         for item in items:
             for child_index in range(item.childCount()):
                 child = item.takeChild(0)
-                parent.addChild(child)
+                self.addNestedChild(parent, child)
             p2.removeChild(item)
 
         return True
