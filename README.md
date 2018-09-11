@@ -33,7 +33,7 @@ Description of MyAnimation from **OSA**:
 [Nexus Link](https://www.nexusmods.com/skyrim/mods/76744/?tab=description&topic_id=5756447)
 
 ##### Preview of an automatically generated menu after scanning a folder
-[![tool_overview.png](https://staticdelivery.nexusmods.com/images/110/45399742-1536670610.png)]
+![tool_overview.png](https://staticdelivery.nexusmods.com/images/110/45399742-1536670610.png)
 
 
 ## Dependencies
