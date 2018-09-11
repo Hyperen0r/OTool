@@ -3,6 +3,7 @@
 
 import sys
 import logging
+import Resources.icon
 log = logging.getLogger(__name__)
 
 from PyQt5.QtCore import Qt, QSize
@@ -16,7 +17,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         log.info("Initializing " + title + " window")
-        self.setWindowIcon(QIcon('Resources/icon.ico'))
+        self.setWindowIcon(QIcon(':/icon.ico'))
         self.setWindowTitle(title)
 
         self.mainLayout = QVBoxLayout()

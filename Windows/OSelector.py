@@ -22,7 +22,7 @@ class OSelector(MainWindow):
 
     def __init__(self):
         super().__init__("OSelector")
-        self.setSize(QSize(1200, 1000))
+        self.setSize(QSize(1400, 1000))
         self.wizardSetup = WizardSetup()
         return
 
