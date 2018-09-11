@@ -47,7 +47,7 @@ otherwise there is no use to launch the tool.
 ## Installation
 
 ### Tool
-* **[Download the tool](https://github.com/Hyperen0r/OSelector/releases)**
+* **[Download the tool](https://github.com/Hyperen0r/OTool/releases/tag/1.0)**
 
 You can run the tool anywhere. Also it generates two files in the same folder:
 
@@ -56,7 +56,7 @@ You can run the tool anywhere. Also it generates two files in the same folder:
 
 If you delete the config file, a new one will be automatically generated with the default
 settings. You can edit this file to better suit your needs. For more information on this,
-please refer **[to the Configuration section](https://github.com/Hyperen0r/OSelector#configurations)**
+please refer **[to the Configuration section](https://github.com/Hyperen0r/OTool#configurations)**
 
 As for the log file, you can delete without worries, as it will be overwritten/generated
 everytime you launch the tool. If you do not need it you can disable it in the conf.ini file.
@@ -251,7 +251,7 @@ It will automatically generate a new one.
 
 ##### Q: There is bug ! / I have some ideas for improving/fixing the tool
 **A:** If you want to report an issue or feature request, feel free to open a ticket through github.
-To do so, go to **[ISSUES](https://github.com/Hyperen0r/OSelector/issues)**, click on _**New Issue**_
+To do so, go to **[ISSUES](https://github.com/Hyperen0r/OTool/issues)**, click on _**New Issue**_
 and chose one of the templates. 
 
 
@@ -304,7 +304,7 @@ each string is limited to 25 characters (also configurable)
 If you are suspicious, you can do the following:
 
 * Check with **[Virus Total](https://www.virustotal.com/#/home/upload)**
-* Check the source. **[Github link](https://github.com/Hyperen0r/OSelector)**
+* Check the source. **[Github link](https://github.com/Hyperen0r/OTool)**
 * Execute directly from source. In that case, please refer to **[Tools Used](##Tools-Used)**
 to help you setup your environment.
 
