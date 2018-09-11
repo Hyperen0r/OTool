@@ -21,7 +21,7 @@ class AnimTreeWidget(QTreeWidget):
         self.header().setDefaultAlignment(Qt.AlignHCenter)
         self.header().setMinimumSectionSize(200)
         self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.setHeaderLabels(["Name", "Icon", "Id", "MaxChildren", "Type", "SetIndex", "SetCounter", "LevelTwo"])
+        self.setHeaderLabels(["Name", "Icon", "Id"])
 
         toDefaultItem(self.invisibleRootItem())
 
@@ -184,7 +184,7 @@ class AnimTreeWidget(QTreeWidget):
                 log.info("Duplicate found : " + child.get("n"))
             else:
                 item = create_item(name, icon, id)
-                self.addChild(parent, item)
+                parent.addChild(item)
                 duplicateCounter += self.addXMLChild(item, child, animations)
         return duplicateCounter
 
@@ -364,6 +364,13 @@ class AnimTreeWidget(QTreeWidget):
                 if not parent:
                     parent = self.invisibleRootItem()
                 parent.removeChild(item)
+        elif not item.text(2) and item.childCount() == 1:
+            child = item.child(0)
+            if item.text(0) == child.text(0):
+                for i in range(child.childCount()):
+                    subchild = child.takeChild(0)
+                    item.addChild(subchild)
+                item.removeChild(child)
         return
 
     def open_menu(self):

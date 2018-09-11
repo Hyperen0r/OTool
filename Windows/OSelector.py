@@ -80,15 +80,32 @@ class OSelector(MainWindow):
 
         self.groupBoxPluginGen.setLayout(hbox)
 
+        # Generation
+        self.groupBoxActions = create_group_box(self, "Utility")
+
+        buttonCheckAll = create_button(self, "Check All", self.actionCheckAll)
+        buttonUncheckAll = create_button(self, "Uncheck All", self.actionUncheckAll)
+        buttonCleanup = create_button(self, "Cleanup", self.actionCleanup)
+        buttonCleanup.setToolTip(" 1) - Remove all folders containing no animations\n"
+                                 " 2) - Remove nested folders, when parent has the same name")
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(buttonCheckAll)
+        hbox.addWidget(buttonUncheckAll)
+        hbox.addWidget(buttonCleanup)
+
+        self.groupBoxActions.setLayout(hbox)
+
         # Widget
         self.tabWidget = QTabWidget(self)
         self.tabWidget.addTab(IconsViewer(self), "Icons List")
         self.tabWidget.setCurrentIndex(1)
 
-        rightVBox.setSpacing(50)
+        rightVBox.setSpacing(20)
         rightVBox.addWidget(self.groupBoxAnimStat)
         rightVBox.addWidget(self.groupBoxAnimLoad)
         rightVBox.addWidget(self.groupBoxPluginGen)
+        rightVBox.addWidget(self.groupBoxActions)
         rightVBox.addWidget(self.tabWidget)
 
         mainHBox.addItem(rightVBox)
@@ -97,6 +114,15 @@ class OSelector(MainWindow):
         mainHBox.setSpacing(10)
         self.mainLayout.addItem(mainHBox)
         return
+
+    def actionCheckAll(self):
+        self.navMenu.action_checkAll()
+
+    def actionUncheckAll(self):
+        self.navMenu.action_uncheckAll()
+
+    def actionCleanup(self):
+        self.navMenu.action_cleanup()
 
     def actionScanFolder(self):
         log.info("Action: Scan Folder called")
@@ -313,3 +339,5 @@ class OSelector(MainWindow):
         self.groupBoxAnimStat.setEnabled(state)
         self.groupBoxAnimLoad.setEnabled(state)
         self.groupBoxNavMenu.setEnabled(state)
+        self.groupBoxActions.setEnabled(state)
+        self.tabWidget.setEnabled(state)
