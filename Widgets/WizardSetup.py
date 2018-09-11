@@ -33,8 +33,8 @@ class IntroPage(QWizardPage):
         super().__init__(parent)
         self.setTitle("Introduction")
 
-        label = QLabel("Hello ! It's seems it is your first time using OSelector. Before, you can use it, "
-                       "you have some setup to do. This wizard will guide you through the steps. <br />"
+        label = QLabel("Hello ! It seems it is your first time using OSelector. Before, you can use it, "
+                       "there is some setup to do. This wizard will guide you through it. <br />"
                        "<br />"
                        "<br />"
                        "If you encounter bugs or need some help, please visit : "
@@ -60,7 +60,7 @@ class InstallFolderPage(QWizardPage):
         instructionsLabel = QLabel(self)
         instructionsLabel.setWordWrap(True)
         instructionsLabel.setText("If you use <b>Mod Organizer</b> and specify his <b>mods/</b> folder, then it will "
-                                  "automatically be installed. You just have to activate it in <b>Mod organizer's</b> "
+                                  "automatically be installed. You just have to activated it in <b>Mod organizer's</b> "
                                   "left pane, if you have never activate it before. "
                                   "(Refresh left pane if you don't see it)<br />"
                                   "<br />"

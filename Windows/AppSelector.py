@@ -1,6 +1,7 @@
 from Windows.MainWindow import MainWindow
 from Windows.OSelector import OSelector
 from Gui.QuickyGui import *
+from PyQt5.QtCore import QSize
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGridLayout, QVBoxLayout
@@ -19,7 +20,8 @@ class AppSelector(MainWindow):
         vbox = QVBoxLayout()
 
         buttonOSelector = create_button(self, "OSelector", self.actionOpenOSelector)
-        vbox.addWidget(buttonOSelector)
+        buttonOSelector.setFixedSize(QSize(200, 200))
+        vbox.addWidget(buttonOSelector),
 
         groupBox.setLayout(vbox)
 

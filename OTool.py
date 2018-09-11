@@ -3,6 +3,7 @@ import logging
 
 from Core.Config import get_config
 from Windows.AppSelector import AppSelector
+from Windows.OSelector import OSelector
 from PyQt5.QtWidgets import QApplication
 
 if __name__ == '__main__':
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     logging.info(" =============== STARTING LOGGING ===============")
 
     app = QApplication(sys.argv)
-    window = AppSelector()
+    window = OSelector()
     window.setAppStyle(app)
-    window.show()
+    window.open()
     sys.exit(app.exec_())

@@ -140,7 +140,7 @@ class GenerationPage(QWizardPage):
         folder = QFileDialog.getExistingDirectory(self, 'Mod folder location', '', QFileDialog.ShowDirsOnly)
 
         if folder:
-            self.pluginNameLineEdit.setText(str(folder))
+            self.installFolderLineEdit.setText(str(folder))
 
     def updateImage(self):
         self.pluginIconPixmap.setPixmap(QPixmap(":/icons/" + self.pluginIconLineEdit.text()))

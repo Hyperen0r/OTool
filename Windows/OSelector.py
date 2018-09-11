@@ -29,7 +29,7 @@ class OSelector(MainWindow):
     def initUI(self):
         mainHBox = QHBoxLayout()
         # ====================== LEFT PANE ======================
-        self.groupBoxNavMenu = create_group_box(self, "Navigation Menu")
+        self.groupBoxNavMenu = create_group_box(self, "STEP II - Tweak Navigation Menu")
 
         self.navMenu = AnimTreeWidget()
         self.navMenu.itemClicked.connect(self.slotLcdAnimChecked)
@@ -57,7 +57,7 @@ class OSelector(MainWindow):
         self.groupBoxAnimStat.setLayout(hbox)
 
         # Loading
-        self.groupBoxAnimLoad = create_group_box(self, "Load / Add animations")
+        self.groupBoxAnimLoad = create_group_box(self, "STEP I - Loading")
 
         buttonScanFolder = create_button(self, "Scan Folder", self.actionScanFolder)
         buttonLoadPlugin = create_button(self, "Load Plugin", self.actionLoadPlugin)
@@ -69,7 +69,7 @@ class OSelector(MainWindow):
         self.groupBoxAnimLoad.setLayout(hbox)
 
         # Generation
-        self.groupBoxPluginGen = create_group_box(self, "Plugin Generation")
+        self.groupBoxPluginGen = create_group_box(self, "STEP III - Generation")
 
         buttonGeneratePlugin = create_button(self, "Generate Plugin", self.actionGeneratePlugin)
         buttonSetInstallFolder = create_button(self, "Set Install Folder", self.actionSetInstallFolder)

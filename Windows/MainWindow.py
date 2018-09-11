@@ -43,6 +43,8 @@ class MainWindow(QMainWindow):
     @staticmethod
     def setAppStyle(app):
         if "WindowsVista" in [st for st in QStyleFactory.keys()]:
+            app.setStyle(QStyleFactory.create("WindowsVista"))
+        elif "Fusion" in [st for st in QStyleFactory.keys()]:
             app.setStyle(QStyleFactory.create("Fusion"))
         elif sys.platform == "win32":
             app.setStyle(QStyleFactory.create("WindowsVista"))
