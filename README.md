@@ -1,5 +1,3 @@
-PS: If you want a better looking version, visit this **[LINK](https://hyperen0r.github.io/OSelector/)**
-
 # OSelector
 
 **OSelector** is a tool to automatically generate a poser plugin for **OSA**
