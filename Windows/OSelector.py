@@ -262,6 +262,12 @@ class OSelector(MainWindow):
                         for s in module_name.split():
                             redundantModuleStrings.add(s.lower())
 
+                        # FOR OSA and his modules
+                        if '0Sex' in module_name:
+                            s = "0Sx" + module_name.split()[1]
+                            redundantModuleStrings.add(s.lower())
+                            redundantModuleStrings.add("0sx0mf")
+
                         if not module_name:
                             module_name = previous_module_name or package_name
 
@@ -290,7 +296,7 @@ class OSelector(MainWindow):
                                     animation = package.getAnimationFromName(animation_name) or \
                                                 package.getAnimationFromName(module_name + " " + animation_name)
                                     if not animation:
-                                        animation = Animation()
+                                        animation = Animation(animation_name)
                                         animation.addStage(stage)
                                         module[animation_name] = animation
                                     else:

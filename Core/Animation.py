@@ -5,8 +5,9 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 
 class Animation:
 
-    def __init__(self):
+    def __init__(self, name=""):
         self.actors = dict()
+        self._name = name
 
     def addStage(self, stage):
         actor = stage.actor()
@@ -28,7 +29,7 @@ class Animation:
             return len(next(iter(self.actors.values())))
 
     def name(self):
-        return (next(iter(self.actors.values())))[0].name()
+        return self._name or (next(iter(self.actors.values())))[0].name()
 
     def actor(self):
         return iter(self.actors.keys())
