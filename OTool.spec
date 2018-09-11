@@ -26,4 +26,5 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False)
+          console=False,
+          icon='C:\\Users\\Hyperenor\\PycharmProjects\\OTool\\Resources\\icon.ico')
