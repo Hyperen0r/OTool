@@ -5,8 +5,7 @@ import sys
 import logging
 log = logging.getLogger(__name__)
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QStyle, QStyleFactory, QStatusBar)
 
 
@@ -43,9 +42,7 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def setAppStyle(app):
-        if "WindowsVista" in [st for st in QStyleFactory.keys()]:
-            app.setStyle(QStyleFactory.create("WindowsVista"))
-        elif "Fusion" in [st for st in QStyleFactory.keys()]:
+        if "Fusion" in [st for st in QStyleFactory.keys()]:
             app.setStyle(QStyleFactory.create("Fusion"))
         elif sys.platform == "win32":
             app.setStyle(QStyleFactory.create("WindowsVista"))

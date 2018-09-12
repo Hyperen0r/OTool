@@ -29,8 +29,10 @@ class WizardGeneration(QWizard):
     def onFinish(self):
         folder, name, icon = self.page.getValues()
 
-        get_config().set("CONFIG", "lastName", name)
-        get_config().set("CONFIG", "lastIcon", icon)
+        if name:
+            get_config().set("CONFIG", "lastName", name)
+        if icon:
+            get_config().set("CONFIG", "lastIcon", icon)
         save_config()
 
         path_plugin_folder = folder + "/" + \
@@ -106,7 +108,7 @@ class GenerationPage(QWizardPage):
         pluginNameHBox.setSpacing(10)
 
         # PLUGIN ICON
-        pluginIconLabel = create_label(self, "Plugin Name")
+        pluginIconLabel = create_label(self, "Plugin Icon")
         pluginIconLabel.setFixedWidth(self.labelWidth)
         pluginIconLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.pluginIconLineEdit = QLineEdit(self)

@@ -2,7 +2,6 @@ import sys
 import logging
 
 from Core.Config import get_config
-from Windows.AppSelector import AppSelector
 from Windows.OSelector import OSelector
 from PyQt5.QtWidgets import QApplication
 

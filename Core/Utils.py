@@ -95,11 +95,6 @@ def toReadableString(string):
     return out_string.strip()
 
 def removeWords(string, list):
-    if '0S' in string:
-        print(string + " List : " + str(list))
-        for word in string.split():
-            if '0S' in word:
-                print(word + " " + word.lower())
     return " ".join([ word for word in string.split() if not word.lower() in list])
 
 def splitIntoWords(string):
