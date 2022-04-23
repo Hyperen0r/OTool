@@ -239,7 +239,7 @@ class OSelector(MainWindow):
 
             for root, dirs, files in os.walk(scan_dir):
                 for file in files:
-                    if file.startswith("FNIS") and file.endswith("List.txt"):
+                    if file.startswith("FNIS") and (file.endswith("List.txt") or file.endswith("list.txt")):
                         log.info("Found FNIS file : " + file)
 
                         FNIS_file = os.path.join(root, file)
